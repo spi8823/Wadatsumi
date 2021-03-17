@@ -22,7 +22,7 @@ namespace Wadatsumi.Data.Jinja
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
-                .UseSqlite("Data Source=wwwroot/sqlitetext.db")
+                .UseSqlite("Data Source=wwwroot/database/jinja.db")
                 .UseLazyLoadingProxies();
         }
     }

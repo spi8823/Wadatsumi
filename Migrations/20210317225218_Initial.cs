@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Wadatsumi.Migrations
 {
@@ -19,7 +20,7 @@ namespace Wadatsumi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Region",
+                name: "RegionDbSet",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
@@ -28,11 +29,11 @@ namespace Wadatsumi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Region", x => x.ID);
+                    table.PrimaryKey("PK_RegionDbSet", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Shinmei",
+                name: "ShinmeiDbSet",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
@@ -43,9 +44,9 @@ namespace Wadatsumi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Shinmei", x => x.ID);
+                    table.PrimaryKey("PK_ShinmeiDbSet", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Shinmei_KamiDbSet_KamiID",
+                        name: "FK_ShinmeiDbSet_KamiDbSet_KamiID",
                         column: x => x.KamiID,
                         principalTable: "KamiDbSet",
                         principalColumn: "ID",
@@ -53,7 +54,7 @@ namespace Wadatsumi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ryouseikoku",
+                name: "RyouseikokuDbSet",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
@@ -63,11 +64,11 @@ namespace Wadatsumi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ryouseikoku", x => x.ID);
+                    table.PrimaryKey("PK_RyouseikokuDbSet", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Ryouseikoku_Region_RegionID",
+                        name: "FK_RyouseikokuDbSet_RegionDbSet_RegionID",
                         column: x => x.RegionID,
-                        principalTable: "Region",
+                        principalTable: "RegionDbSet",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -80,21 +81,42 @@ namespace Wadatsumi.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Kana = table.Column<string>(type: "TEXT", nullable: true),
+                    Address = table.Column<string>(type: "TEXT", nullable: true),
                     RyouseikokuID = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JinjaDbSet", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_JinjaDbSet_Ryouseikoku_RyouseikokuID",
+                        name: "FK_JinjaDbSet_RyouseikokuDbSet_RyouseikokuID",
                         column: x => x.RyouseikokuID,
-                        principalTable: "Ryouseikoku",
+                        principalTable: "RyouseikokuDbSet",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Saijin",
+                name: "GoshuinDbSet",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    JinjaID = table.Column<int>(type: "INTEGER", nullable: true),
+                    VisitDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GoshuinDbSet", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_GoshuinDbSet_JinjaDbSet_JinjaID",
+                        column: x => x.JinjaID,
+                        principalTable: "JinjaDbSet",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SaijinDbSet",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "INTEGER", nullable: false)
@@ -104,15 +126,15 @@ namespace Wadatsumi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Saijin", x => x.ID);
+                    table.PrimaryKey("PK_SaijinDbSet", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Saijin_JinjaDbSet_JinjaID",
+                        name: "FK_SaijinDbSet_JinjaDbSet_JinjaID",
                         column: x => x.JinjaID,
                         principalTable: "JinjaDbSet",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Saijin_KamiDbSet_KamiID",
+                        name: "FK_SaijinDbSet_KamiDbSet_KamiID",
                         column: x => x.KamiID,
                         principalTable: "KamiDbSet",
                         principalColumn: "ID",
@@ -120,38 +142,46 @@ namespace Wadatsumi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_GoshuinDbSet_JinjaID",
+                table: "GoshuinDbSet",
+                column: "JinjaID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_JinjaDbSet_RyouseikokuID",
                 table: "JinjaDbSet",
                 column: "RyouseikokuID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ryouseikoku_RegionID",
-                table: "Ryouseikoku",
+                name: "IX_RyouseikokuDbSet_RegionID",
+                table: "RyouseikokuDbSet",
                 column: "RegionID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Saijin_JinjaID",
-                table: "Saijin",
+                name: "IX_SaijinDbSet_JinjaID",
+                table: "SaijinDbSet",
                 column: "JinjaID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Saijin_KamiID",
-                table: "Saijin",
+                name: "IX_SaijinDbSet_KamiID",
+                table: "SaijinDbSet",
                 column: "KamiID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shinmei_KamiID",
-                table: "Shinmei",
+                name: "IX_ShinmeiDbSet_KamiID",
+                table: "ShinmeiDbSet",
                 column: "KamiID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Saijin");
+                name: "GoshuinDbSet");
 
             migrationBuilder.DropTable(
-                name: "Shinmei");
+                name: "SaijinDbSet");
+
+            migrationBuilder.DropTable(
+                name: "ShinmeiDbSet");
 
             migrationBuilder.DropTable(
                 name: "JinjaDbSet");
@@ -160,10 +190,10 @@ namespace Wadatsumi.Migrations
                 name: "KamiDbSet");
 
             migrationBuilder.DropTable(
-                name: "Ryouseikoku");
+                name: "RyouseikokuDbSet");
 
             migrationBuilder.DropTable(
-                name: "Region");
+                name: "RegionDbSet");
         }
     }
 }

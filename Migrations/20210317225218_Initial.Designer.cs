@@ -9,8 +9,8 @@ using Wadatsumi.Data.Jinja;
 namespace Wadatsumi.Migrations
 {
     [DbContext(typeof(JinjaDbContext))]
-    [Migration("20210314084613_AddAllDbSet")]
-    partial class AddAllDbSet
+    [Migration("20210317225218_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,11 +18,33 @@ namespace Wadatsumi.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.4");
 
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Goshuin", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("JinjaID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("VisitDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("JinjaID");
+
+                    b.ToTable("GoshuinDbSet");
+                });
+
             modelBuilder.Entity("Wadatsumi.Data.Jinja.Jinja", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Kana")
                         .HasColumnType("TEXT");
@@ -125,6 +147,15 @@ namespace Wadatsumi.Migrations
                     b.HasIndex("KamiID");
 
                     b.ToTable("ShinmeiDbSet");
+                });
+
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Goshuin", b =>
+                {
+                    b.HasOne("Wadatsumi.Data.Jinja.Jinja", "Jinja")
+                        .WithMany()
+                        .HasForeignKey("JinjaID");
+
+                    b.Navigation("Jinja");
                 });
 
             modelBuilder.Entity("Wadatsumi.Data.Jinja.Jinja", b =>
