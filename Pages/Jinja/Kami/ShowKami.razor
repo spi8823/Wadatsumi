@@ -1,0 +1,23 @@
+﻿@page "/Jinja/Kami/{ID:int}"
+@inject Data.Jinja.JinjaDbContext jinjadb
+@inject NavigationManager navigation 
+
+<h3>@Kami.ShinmeiList.First().Name</h3>
+
+@code{
+    [Parameter]
+    public int ID { get; set; }
+
+    private Data.Jinja.Kami Kami { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Kami = jinjadb.KamiDbSet.Find(ID);
+        if(Kami == null)
+        {
+            navigation.NavigateTo("/Jinja/Kami/New");
+            return;
+        }
+        StateHasChanged();
+    }
+}

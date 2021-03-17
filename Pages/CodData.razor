@@ -1,0 +1,27 @@
+﻿@page "/cod_statistics"
+@using Radzen.Blazor
+@using Data.Cod
+@inject Data.Cod.MatchResultService matchResultService
+
+<RadzenChart>
+    <RadzenLineSeries Data="@MatchResults" CategoryProperty="@nameof(MatchResult.StartTime)" ValueProperty="@nameof(MatchResult.KillDeathRatio)">
+        <RadzenMarkers MarkerType="MarkerType.Square"/>
+    </RadzenLineSeries>
+    <RadzenCategoryAxis Padding="20"/>
+    <RadzenValueAxis/>
+</RadzenChart>
+
+@code{
+    private Data.Cod.MatchResult[] MatchResults = null;
+
+    protected override void OnInitialized()
+    {
+        SetMatchResults();
+        base.OnInitialized();
+    }
+
+    private void SetMatchResults()
+    {
+        MatchResults = matchResultService.GetAll().ToArray();
+    }
+}

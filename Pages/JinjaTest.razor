@@ -1,0 +1,22 @@
+﻿@page "/jinjatest"
+@inject Data.Jinja.JinjaDbContext jinjadb
+@using Radzen.Blazor
+
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>神社名</h3></div>
+    <div><RadzenTextBox Style="font-size:16px"></RadzenTextBox></div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>令制国</h3></div>
+    <div><RadzenDropDownDataGrid TValue="int" 
+                            AllowFiltering="true" 
+                            Data="@jinjadb.RyouseikokuDbSet.Where(r => true)"
+                            TextProperty="Name" ValueProperty="ID">
+    </RadzenDropDownDataGrid></div>
+</div>
+
+<h3>jinjatest</h3>
+
+@code {
+
+}

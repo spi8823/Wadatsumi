@@ -1,0 +1,166 @@
+﻿@page "/Jinja/New"
+@using Radzen.Blazor
+@using Data.Jinja
+@using Microsoft.EntityFrameworkCore
+@inject JinjaDbContext jinjadb
+@inject NavigationManager navigation
+
+<h1>神社追加</h1>
+
+<div class="col-xl-1 col-lg-2 col-3 text-left"><h2>名称</h2></div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>表記</h3></div>
+    <div><RadzenTextBox Style="font-size:16px" Value="@Jinja.Name" Change=@(value => Jinja.Name = value)></RadzenTextBox></div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>読み</h3></div>
+    <div><RadzenTextBox Style="font-size:16px" Value="@Jinja.Kana" Change=@(value => Jinja.Kana = value)></RadzenTextBox></div>
+</div>
+
+<hr />
+
+
+<div class="col-xl-1 col-lg-2 col-3 text-left"><h2>場所</h2></div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>住所</h3></div>
+    <div>
+        <RadzenTextBox Style="width:300px" Change="@(s => Jinja.Address = s)"></RadzenTextBox>
+    </div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>令制国</h3></div>
+    <div>
+        <RadzenDropDown TValue="Ryouseikoku" Data=@jinjadb.RyouseikokuDbSet Context="ryouseikoku" Change="@(r => Jinja.Ryouseikoku = (Ryouseikoku)r)">
+            <Template>
+                [@ryouseikoku.Region.Name]@ryouseikoku.Name
+            </Template>
+        </RadzenDropDown>
+    </div>
+</div>
+
+<hr />
+
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-left"><h2>祭神</h2></div>
+    <div>
+        <RadzenButton Click=AddSaijin>追加</RadzenButton>
+        <br />
+    </div>
+</div>
+@for (var i = 0; i < Jinja.SaijinList.Count; i++)
+{
+    var index = i;
+    <div class="row d-flex flex-row align-items-center">
+        <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>祭神@(i + 1)</h3></div>
+        <div>
+            <RadzenDropDownDataGrid TValue="Shinmei" Data=@MainShinmeiList TextProperty="Name"
+                                    Change="@(s => Jinja.SaijinList[index].Kami = (s as Shinmei).Kami)">
+
+            </RadzenDropDownDataGrid>
+        </div>
+    </div>
+}
+
+
+<hr />
+
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>御朱印</h3></div>
+    <div>
+        <RadzenCheckBox TValue="bool" Value=IsGoshuin />
+        <br />
+    </div>
+</div>
+
+<br />
+
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"></div>
+    <div>
+        <RadzenButton Click=Create>適用</RadzenButton>
+    </div>
+</div>
+@code{
+    private Jinja Jinja { get; set; }
+    private IEnumerable<Ryouseikoku> RyouseikokuList { get; set; }
+    private IEnumerable<Shinmei> MainShinmeiList { get; set; }
+    private bool IsGoshuin { get; set; } = false;
+
+    //private RadzenDropDownDataGrid<Ryouseikoku> ryouseikokuDropDown;
+
+    protected override void OnInitialized()
+    {
+        Jinja = new Jinja()
+        {
+            SaijinList = new List<Saijin>(),
+        };
+        RyouseikokuList = jinjadb.RyouseikokuDbSet;
+        MainShinmeiList = jinjadb.KamiDbSet.Select(k => k.ShinmeiList.First());
+        base.OnInitialized();
+    }
+
+    protected void Create()
+    {
+        Jinja.SaijinList.RemoveAll(s => s == null || s.Kami == null);
+        jinjadb.JinjaDbSet.Add(Jinja);
+        jinjadb.Entry(Jinja).State = EntityState.Added;
+
+        if(IsGoshuin)
+        {
+            var goshuin = new Goshuin()
+            {
+                Jinja = Jinja,
+                VisitDate = DateTime.Now,
+            };
+            jinjadb.GoshuinDbSet.Add(goshuin);
+            jinjadb.Entry(goshuin).State = EntityState.Added;
+        }
+
+        jinjadb.SaveChanges();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //ryouseikokuDropDown.Reset();
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    protected void AddSaijin()
+    {
+        var saijin = new Saijin()
+        {
+            Jinja = Jinja,
+            Kami = null,
+        };
+        Jinja.SaijinList.Add(saijin);
+        StateHasChanged();
+    }
+}
+
+@*DropDownDataGrid*@
+@code{
+    #region
+    /*
+    <div class="row d-flex flex-row align-items-center">
+        <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>令制国</h3></div>
+        <div>
+            <RadzenDropDownDataGrid @ref="ryouseikokuDropDown" TValue="Ryouseikoku"
+                                Data=@RyouseikokuList TextProperty="Name"
+                                PageSize="8" Change="@(r => Jinja.Ryouseikoku = (Ryouseikoku)r)">
+                <Columns>
+                    <RadzenDropDownDataGridColumn Context="ryouseikoku" Title="地方" Width="30px">
+                        <Template>@ryouseikoku.Region.Name</Template>
+                    </RadzenDropDownDataGridColumn>
+                    <RadzenDropDownDataGridColumn Context="ryouseikoku" Title="国名" Width="70px">
+                        <Template>@ryouseikoku.Name</Template>
+                    </RadzenDropDownDataGridColumn>
+                </Columns>
+            </RadzenDropDownDataGrid>
+        </div>
+    </div>
+    */
+    #endregion
+}

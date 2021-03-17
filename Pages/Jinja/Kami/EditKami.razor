@@ -1,0 +1,51 @@
+﻿@page "/Jinja/Kami/Edit/{ID:int}"
+
+@inject Data.Jinja.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+@using Radzen.Blazor
+
+<h2>神名編集</h2>
+@{
+    var i = 1;
+    foreach (var shinmei in Kami.ShinmeiList)
+    {
+        <h3>神名 @i</h3>
+        <div class="row d-flex flex-row align-items-center">
+            <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>表記</h3></div>
+            <div><RadzenTextBox Style="font-size:16px" Value="@shinmei.Name" Change=@(args => shinmei.Name = args.ToString())></RadzenTextBox></div>
+        </div>
+        <div class="row d-flex flex-row align-items-center">
+            <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>読み</h3></div>
+            <div><RadzenTextBox Style="font-size:16px" Value="@shinmei.Kana" Change=@(args => shinmei.Kana = args.ToString())></RadzenTextBox></div>
+        </div>
+        <br />
+        i++;
+    }
+}
+
+<RadzenButton Click="@(args => AddShinmei())">名前を追加する</RadzenButton>
+<RadzenButton Click="@(args => Apply())">適用</RadzenButton>
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+    private Data.Jinja.Kami Kami { get; set; }
+    protected override void OnInitialized()
+    {
+        Kami = jinjadb.KamiDbSet.Find(ID);
+    }
+
+    protected void AddShinmei()
+    {
+        Kami.ShinmeiList.Add(new Data.Jinja.Shinmei());
+        StateHasChanged();
+    }
+
+    protected void Apply()
+    {
+        jinjadb.Entry(Kami).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        jinjadb.SaveChanges();
+
+        navigation.NavigateTo($"/Jinja/Kami/List");
+    }
+}
