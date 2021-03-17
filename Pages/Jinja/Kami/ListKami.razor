@@ -1,7 +1,6 @@
 ﻿@page "/Jinja/Kami/List"
 @using Radzen.Blazor
 @using Data.Jinja
-@using Microsoft.AspNetCore.Components.Web
 @inject JinjaDbContext jinjadb
 @inject NavigationManager navigation 
 
@@ -20,13 +19,13 @@
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Kami" Width="180px">
             <Template Context="kami">
-                <RadzenButton Click="@(args => navigation.NavigateTo($"/Jinja/Kami/Edit/{kami.ID}"))" Style="width:160px">編集する</RadzenButton>
+                <RadzenButton @onclick="@(args => navigation.NavigateTo($"/Jinja/Kami/Edit/{kami.ID}"))" Style="width:160px">編集する</RadzenButton>
             </Template>
         </RadzenGridColumn>
     </Columns>
 </RadzenGrid>
 <br/>
-<RadzenButton Click="@(args => navigation.NavigateTo("/Jinja/Kami/New"))">追加する</RadzenButton>
+<RadzenButton @onclick="@(args => navigation.NavigateTo("/Jinja/Kami/New"))">追加する</RadzenButton>
 
 @code { 
     private IEnumerable<Kami> KamiList { get; set; }
