@@ -28,5 +28,7 @@ namespace Wadatsumi.Data.Jinja
         public int ID { get; set; }
         public virtual Jinja Jinja { get; set; }
         public DateTime VisitDate { get; set; }
+        public string LoadTravelogue() => System.IO.File.ReadAllText(PathDefine.GetGoshuinTraveloguePath(ID));
+        public void SaveTravelogue(string content) { System.IO.File.WriteAllText(PathDefine.GetGoshuinTraveloguePath(ID), content); }
     }
 }
