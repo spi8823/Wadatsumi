@@ -43,12 +43,13 @@ namespace Wadatsumi.Data.Jinja
         public virtual Municipality Municipality { get; set; }
         public string Address { get; set; }
 
-        public void Set(Geolocation geo, JinjaDbContext jinjadb)
+        public Location() { }
+        public Location(Geolocation geo, JinjaDbContext jinjadb)
         {
             Latitude = geo.Latitude;
             Longitude = geo.Longitude;
             Prefecture = jinjadb.PrefectureDbSet.Find(geo.PrefectureID);
-            Municipality = jinjadb.MunicipalityDbSet.First(m => m.MuniCd == (geo.MunicipalityID + geo.PrefectureID).ToString());
+            Municipality = jinjadb.MunicipalityDbSet.First(m => m.MuniCd == geo.MunicipalityID.ToString());
             Address = geo.Address;
         }
     }
