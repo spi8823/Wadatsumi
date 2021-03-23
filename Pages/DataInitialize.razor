@@ -1,0 +1,92 @@
+﻿@page "/Jinja/Initialize"
+@using Radzen.Blazor
+@using Data.Jinja
+@using Microsoft.EntityFrameworkCore;
+@inject JinjaDbContext jinjadb
+@inject IJSRuntime jsruntime 
+@inject HttpClient httpClient 
+
+<RadzenButton Click="Execute">実行</RadzenButton>
+<p>@Text</p>
+
+@code {
+    private string Text = "";
+    private async void Execute()
+    {
+        Text = "実行中";
+        StateHasChanged();
+        using var reader = new System.IO.StreamReader("wwwroot/jinja_resource/ryouseikoku_list.txt");
+        string line = null;
+        while ((line = reader.ReadLine()) != null)
+        {
+            var values = line.Split('\t');
+            if (!jinjadb.RegionDbSet.Any(r => r.Name == values[3]))
+            {
+                var newregion = new Region() { Name = values[3] };
+                jinjadb.RegionDbSet.Add(newregion).State = EntityState.Added;
+                jinjadb.SaveChanges();
+            }
+
+            var region = jinjadb.RegionDbSet.First(r => r.Name == values[3]);
+            var ryouseikoku = new Ryouseikoku()
+            {
+                Name = values[1],
+                Region = region,
+            };
+
+            if (!jinjadb.RyouseikokuDbSet.Any(r => r.Name == ryouseikoku.Name))
+                jinjadb.RyouseikokuDbSet.Add(ryouseikoku).State = EntityState.Added;
+        }
+        jinjadb.SaveChanges();
+
+        var module = await jsruntime.InvokeAsync<Microsoft.JSInterop.IJSObjectReference>("import", "./js/geolocation.js");
+        for (var i = 1; i <= 47; i++)
+        {
+            Prefecture prefecture = null;
+            if(jinjadb.PrefectureDbSet.Count() != 0 && jinjadb.PrefectureDbSet.Any(p => p.ID == i))
+                prefecture = jinjadb.PrefectureDbSet.First(p => p.ID == i);
+
+            for (var j = 0; j < 1000; j++)
+            {
+                var municd = (i * 1000 + j).ToString();
+                var muni = await module.InvokeAsync<string>("getMuni", municd);
+                if (muni == "")
+                    continue;
+                var values = muni.Split(',');
+
+                if(prefecture == null)
+                {
+                    var prefectureName = values[1];
+                    prefecture = new Prefecture()
+                    {
+                        Name = prefectureName,
+                    };
+                    if (!jinjadb.PrefectureDbSet.Any(p => p.Name == prefecture.Name))
+                    {
+                        jinjadb.PrefectureDbSet.Add(prefecture).State = EntityState.Added;
+                        jinjadb.SaveChanges();
+                    }
+                }
+
+                var municipalityName = values[3];
+
+                var municipality = new Municipality()
+                {
+                    Name = municipalityName,
+                    Prefecture = prefecture,
+                    MuniCd = municd,
+                };
+                if (!jinjadb.MunicipalityDbSet.Any(m => m.MuniCd == municipality.MuniCd))
+                {
+                    jinjadb.MunicipalityDbSet.Add(municipality).State = EntityState.Added;
+                    jinjadb.SaveChanges();
+                }
+            }
+        }
+
+        jinjadb.SaveChanges();
+
+        Text = "完了";
+        StateHasChanged();
+    }
+}

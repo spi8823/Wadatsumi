@@ -31,6 +31,7 @@ namespace Wadatsumi
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<Data.Cod.MatchResultService>();
             services.AddDbContext<Data.Jinja.JinjaDbContext>();
+            services.AddSingleton<System.Net.Http.HttpClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

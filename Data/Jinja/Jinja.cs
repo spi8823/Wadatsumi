@@ -11,7 +11,7 @@ namespace Wadatsumi.Data.Jinja
         public int ID { get; set; }
         public string Name { get; set; }
         public string Kana { get; set; }
-        public string Address { get; set; }
+        public virtual Location Location { get; set; }
         public virtual Ryouseikoku Ryouseikoku { get; set; }
         public virtual List<Saijin> SaijinList { get; set; }
     }

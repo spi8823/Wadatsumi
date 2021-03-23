@@ -9,7 +9,7 @@ using Wadatsumi.Data.Jinja;
 namespace Wadatsumi.Migrations
 {
     [DbContext(typeof(JinjaDbContext))]
-    [Migration("20210317225218_Initial")]
+    [Migration("20210321125939_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,11 +43,11 @@ namespace Wadatsumi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Address")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Kana")
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("LocationID")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
@@ -56,6 +56,8 @@ namespace Wadatsumi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("LocationID");
 
                     b.HasIndex("RyouseikokuID");
 
@@ -71,6 +73,72 @@ namespace Wadatsumi.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("KamiDbSet");
+                });
+
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Location", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<int?>("MunicipalityID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("PrefectureID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MunicipalityID");
+
+                    b.HasIndex("PrefectureID");
+
+                    b.ToTable("LocationDbSet");
+                });
+
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Municipality", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("MuniCd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("PrefectureID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("PrefectureID");
+
+                    b.ToTable("MunicipalityDbSet");
+                });
+
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Prefecture", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PrefectureDbSet");
                 });
 
             modelBuilder.Entity("Wadatsumi.Data.Jinja.Region", b =>
@@ -160,11 +228,41 @@ namespace Wadatsumi.Migrations
 
             modelBuilder.Entity("Wadatsumi.Data.Jinja.Jinja", b =>
                 {
+                    b.HasOne("Wadatsumi.Data.Jinja.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationID");
+
                     b.HasOne("Wadatsumi.Data.Jinja.Ryouseikoku", "Ryouseikoku")
                         .WithMany()
                         .HasForeignKey("RyouseikokuID");
 
+                    b.Navigation("Location");
+
                     b.Navigation("Ryouseikoku");
+                });
+
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Location", b =>
+                {
+                    b.HasOne("Wadatsumi.Data.Jinja.Municipality", "Municipality")
+                        .WithMany()
+                        .HasForeignKey("MunicipalityID");
+
+                    b.HasOne("Wadatsumi.Data.Jinja.Prefecture", "Prefecture")
+                        .WithMany()
+                        .HasForeignKey("PrefectureID");
+
+                    b.Navigation("Municipality");
+
+                    b.Navigation("Prefecture");
+                });
+
+            modelBuilder.Entity("Wadatsumi.Data.Jinja.Municipality", b =>
+                {
+                    b.HasOne("Wadatsumi.Data.Jinja.Prefecture", "Prefecture")
+                        .WithMany()
+                        .HasForeignKey("PrefectureID");
+
+                    b.Navigation("Prefecture");
                 });
 
             modelBuilder.Entity("Wadatsumi.Data.Jinja.Ryouseikoku", b =>

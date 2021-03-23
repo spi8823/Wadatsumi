@@ -2,8 +2,11 @@
 @using Radzen.Blazor
 @using Data.Jinja
 @using Microsoft.EntityFrameworkCore
+@using System.Text.Json
 @inject JinjaDbContext jinjadb
 @inject NavigationManager navigation
+@inject IJSRuntime jsruntime
+@inject HttpClient httpClient
 
 <h1>神社追加</h1>
 
@@ -24,7 +27,6 @@
 <div class="row d-flex flex-row align-items-center">
     <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>住所</h3></div>
     <div>
-        <RadzenTextBox Style="width:300px" Change="@(s => Jinja.Address = s)"></RadzenTextBox>
     </div>
 </div>
 <div class="row d-flex flex-row align-items-center">
@@ -80,6 +82,9 @@
         <RadzenButton Click=Create>適用</RadzenButton>
     </div>
 </div>
+
+<RadzenButton Click=GetFileContent>テスト</RadzenButton>
+
 @code{
     private Jinja Jinja { get; set; }
     private IEnumerable<Ryouseikoku> RyouseikokuList { get; set; }
@@ -136,6 +141,22 @@
             Kami = null,
         };
         Jinja.SaijinList.Add(saijin);
+        StateHasChanged();
+    }
+
+    //The button onclick will call this.
+    async Task GetFileContent()
+    {
+        var geo = new Data.Geolocation(jsruntime, httpClient);
+        await geo.GetCurrentPositionAsync();
+        Console.WriteLine($"{geo.Latitude}, {geo.Longitude}");
+    }
+
+    [JSInvokable]
+    public void GetCurrentPositionCallback(JsonElement position)
+    {
+        var latitude = position.GetProperty("latitude").GetDouble();
+        var longitude = position.GetProperty("longitude").GetDouble();
         StateHasChanged();
     }
 }

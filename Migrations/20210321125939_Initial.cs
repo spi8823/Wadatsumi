@@ -20,6 +20,19 @@ namespace Wadatsumi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PrefectureDbSet",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PrefectureDbSet", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RegionDbSet",
                 columns: table => new
                 {
@@ -54,6 +67,27 @@ namespace Wadatsumi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MunicipalityDbSet",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PrefectureID = table.Column<int>(type: "INTEGER", nullable: true),
+                    MuniCd = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MunicipalityDbSet", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_MunicipalityDbSet_PrefectureDbSet_PrefectureID",
+                        column: x => x.PrefectureID,
+                        principalTable: "PrefectureDbSet",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RyouseikokuDbSet",
                 columns: table => new
                 {
@@ -74,6 +108,35 @@ namespace Wadatsumi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LocationDbSet",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Latitude = table.Column<double>(type: "REAL", nullable: false),
+                    Longitude = table.Column<double>(type: "REAL", nullable: false),
+                    PrefectureID = table.Column<int>(type: "INTEGER", nullable: true),
+                    MunicipalityID = table.Column<int>(type: "INTEGER", nullable: true),
+                    Address = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationDbSet", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_LocationDbSet_MunicipalityDbSet_MunicipalityID",
+                        column: x => x.MunicipalityID,
+                        principalTable: "MunicipalityDbSet",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_LocationDbSet_PrefectureDbSet_PrefectureID",
+                        column: x => x.PrefectureID,
+                        principalTable: "PrefectureDbSet",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "JinjaDbSet",
                 columns: table => new
                 {
@@ -81,12 +144,18 @@ namespace Wadatsumi.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Kana = table.Column<string>(type: "TEXT", nullable: true),
-                    Address = table.Column<string>(type: "TEXT", nullable: true),
+                    LocationID = table.Column<int>(type: "INTEGER", nullable: true),
                     RyouseikokuID = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JinjaDbSet", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_JinjaDbSet_LocationDbSet_LocationID",
+                        column: x => x.LocationID,
+                        principalTable: "LocationDbSet",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_JinjaDbSet_RyouseikokuDbSet_RyouseikokuID",
                         column: x => x.RyouseikokuID,
@@ -147,9 +216,29 @@ namespace Wadatsumi.Migrations
                 column: "JinjaID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_JinjaDbSet_LocationID",
+                table: "JinjaDbSet",
+                column: "LocationID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_JinjaDbSet_RyouseikokuID",
                 table: "JinjaDbSet",
                 column: "RyouseikokuID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationDbSet_MunicipalityID",
+                table: "LocationDbSet",
+                column: "MunicipalityID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LocationDbSet_PrefectureID",
+                table: "LocationDbSet",
+                column: "PrefectureID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MunicipalityDbSet_PrefectureID",
+                table: "MunicipalityDbSet",
+                column: "PrefectureID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RyouseikokuDbSet_RegionID",
@@ -190,10 +279,19 @@ namespace Wadatsumi.Migrations
                 name: "KamiDbSet");
 
             migrationBuilder.DropTable(
+                name: "LocationDbSet");
+
+            migrationBuilder.DropTable(
                 name: "RyouseikokuDbSet");
 
             migrationBuilder.DropTable(
+                name: "MunicipalityDbSet");
+
+            migrationBuilder.DropTable(
                 name: "RegionDbSet");
+
+            migrationBuilder.DropTable(
+                name: "PrefectureDbSet");
         }
     }
 }
