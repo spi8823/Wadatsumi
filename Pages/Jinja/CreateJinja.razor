@@ -25,8 +25,67 @@
 
 <div class="col-xl-1 col-lg-2 col-3 text-left"><h2>場所</h2></div>
 <div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>都道府県</h3></div>
+    @if (IsAutoLocation)
+    {
+        <div><h4>@Jinja.Location.Prefecture.Name</h4></div>
+    }
+    else
+    {
+        <div>
+            <RadzenDropDown TValue="Prefecture"
+                            Data="@jinjadb.PrefectureDbSet"
+                            Context="prefecture"
+                            Change="@(p => Jinja.Location.Prefecture = (Prefecture)p)">
+                <Template>
+                    @prefecture.Name
+                </Template>
+            </RadzenDropDown>
+        </div>
+    }
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>市区町村</h3></div>
+    @if (IsAutoLocation)
+    {
+        <div><h4>@Jinja.Location.Municipality.Name</h4></div>
+    }
+    else
+    {
+        if (Jinja.Location.Prefecture != null)
+        {
+            <div>
+                <RadzenDropDown TValue="Municipality"
+                                Data="@jinjadb.MunicipalityDbSet.Where(m => m.Prefecture.ID == Jinja.Location.Prefecture.ID)"
+                                Context="municipality"
+                                Change="@(m => Jinja.Location.Municipality = (Municipality)m)">
+                    <Template>
+                        @municipality.Name
+                    </Template>
+                </RadzenDropDown>
+            </div>
+        }
+    }
+</div>
+<div class="row d-flex flex-row align-items-center">
     <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>住所</h3></div>
     <div>
+        <RadzenTextBox Value="@Jinja.Location.Address" Change="@(t => Jinja.Location.Address = t)"></RadzenTextBox>
+    </div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3></h3></div>
+    <div>
+        <RadzenButton Click="SwitchAutoLocation">
+            @if (IsAutoLocation)
+            {
+                @:手動入力
+            }
+            else
+            {
+                @:自動取得
+            }
+        </RadzenButton>
     </div>
 </div>
 <div class="row d-flex flex-row align-items-center">
@@ -83,13 +142,12 @@
     </div>
 </div>
 
-<RadzenButton Click=GetFileContent>テスト</RadzenButton>
-
 @code{
     private Jinja Jinja { get; set; }
     private IEnumerable<Ryouseikoku> RyouseikokuList { get; set; }
     private IEnumerable<Shinmei> MainShinmeiList { get; set; }
     private bool IsGoshuin { get; set; } = false;
+    private bool IsAutoLocation { get; set; } = false;
 
     //private RadzenDropDownDataGrid<Ryouseikoku> ryouseikokuDropDown;
 
@@ -98,6 +156,7 @@
         Jinja = new Jinja()
         {
             SaijinList = new List<Saijin>(),
+            Location = new Location(),
         };
         RyouseikokuList = jinjadb.RyouseikokuDbSet;
         MainShinmeiList = jinjadb.KamiDbSet.Select(k => k.ShinmeiList.First());
@@ -110,7 +169,7 @@
         jinjadb.JinjaDbSet.Add(Jinja);
         jinjadb.Entry(Jinja).State = EntityState.Added;
 
-        if(IsGoshuin)
+        if (IsGoshuin)
         {
             var goshuin = new Goshuin()
             {
@@ -144,19 +203,20 @@
         StateHasChanged();
     }
 
-    //The button onclick will call this.
-    async Task GetFileContent()
+    protected async Task SwitchAutoLocation()
     {
-        var geo = new Data.Geolocation(jsruntime, httpClient);
-        await geo.GetCurrentPositionAsync();
-        Console.WriteLine($"{geo.Latitude}, {geo.Longitude}");
-    }
+        if (IsAutoLocation)
+        {
+            Jinja.Location.Prefecture = null;
+            Jinja.Location.Municipality = null;
+        }
+        else
+        {
+            var geo = await Data.Geolocation.GetAsync(jsruntime, httpClient, jinjadb);
+            Jinja.Location = new Location(geo, jinjadb);
+        }
 
-    [JSInvokable]
-    public void GetCurrentPositionCallback(JsonElement position)
-    {
-        var latitude = position.GetProperty("latitude").GetDouble();
-        var longitude = position.GetProperty("longitude").GetDouble();
+        IsAutoLocation = !IsAutoLocation;
         StateHasChanged();
     }
 }
