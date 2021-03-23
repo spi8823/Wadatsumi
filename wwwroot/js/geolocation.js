@@ -12,7 +12,7 @@
     return { latitude: latitude, longitude: longitude };
 }
 
-export function getMuni(municd) {
+export async function getMuni(municd) {
     if (GSI.MUNI_ARRAY[municd]) {
         return GSI.MUNI_ARRAY[municd];
     }
