@@ -1,9 +1,9 @@
-﻿@page "/Jinja/New"
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/New"
 @using Radzen.Blazor
-@using Data.Jinja
 @using Microsoft.EntityFrameworkCore
 @using System.Text.Json
-@inject JinjaDbContext jinjadb
+@inject Data.JinjaDbContext jinjadb
 @inject NavigationManager navigation
 @inject IJSRuntime jsruntime
 @inject HttpClient httpClient
@@ -33,10 +33,10 @@
     else
     {
         <div>
-            <RadzenDropDown TValue="Prefecture"
+            <RadzenDropDown TValue="Data.Prefecture"
                             Data="@jinjadb.PrefectureDbSet"
                             Context="prefecture"
-                            Change="@(p => Jinja.Location.Prefecture = (Prefecture)p)">
+                            Change="@(p => Jinja.Location.Prefecture = (Data.Prefecture)p)">
                 <Template>
                     @prefecture.Name
                 </Template>
@@ -55,10 +55,10 @@
         if (Jinja.Location.Prefecture != null)
         {
             <div>
-                <RadzenDropDown TValue="Municipality"
+                <RadzenDropDown TValue="Data.Municipality"
                                 Data="@jinjadb.MunicipalityDbSet.Where(m => m.Prefecture.ID == Jinja.Location.Prefecture.ID)"
                                 Context="municipality"
-                                Change="@(m => Jinja.Location.Municipality = (Municipality)m)">
+                                Change="@(m => Jinja.Location.Municipality = (Data.Municipality)m)">
                     <Template>
                         @municipality.Name
                     </Template>
@@ -91,7 +91,7 @@
 <div class="row d-flex flex-row align-items-center">
     <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>令制国</h3></div>
     <div>
-        <RadzenDropDown TValue="Ryouseikoku" Data=@jinjadb.RyouseikokuDbSet Context="ryouseikoku" Change="@(r => Jinja.Ryouseikoku = (Ryouseikoku)r)">
+        <RadzenDropDown TValue="Data.Ryouseikoku" Data=@jinjadb.RyouseikokuDbSet Context="ryouseikoku" Change="@(r => Jinja.Ryouseikoku = (Data.Ryouseikoku)r)">
             <Template>
                 [@ryouseikoku.Region.Name]@ryouseikoku.Name
             </Template>
@@ -114,8 +114,8 @@
     <div class="row d-flex flex-row align-items-center">
         <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>祭神@(i + 1)</h3></div>
         <div>
-            <RadzenDropDownDataGrid TValue="Shinmei" Data=@MainShinmeiList TextProperty="Name"
-                                    Change="@(s => Jinja.SaijinList[index].Kami = (s as Shinmei).Kami)">
+            <RadzenDropDownDataGrid TValue="Data.Shinmei" Data=@MainShinmeiList TextProperty="Name"
+                                    Change="@(s => Jinja.SaijinList[index].Kami = (s as Data.Shinmei).Kami)">
 
             </RadzenDropDownDataGrid>
         </div>
@@ -143,9 +143,9 @@
 </div>
 
 @code{
-    private Jinja Jinja { get; set; }
-    private IEnumerable<Ryouseikoku> RyouseikokuList { get; set; }
-    private IEnumerable<Shinmei> MainShinmeiList { get; set; }
+    private Data.Jinja Jinja { get; set; }
+    private IEnumerable<Data.Ryouseikoku> RyouseikokuList { get; set; }
+    private IEnumerable<Data.Shinmei> MainShinmeiList { get; set; }
     private bool IsGoshuin { get; set; } = false;
     private bool IsAutoLocation { get; set; } = false;
 
@@ -153,10 +153,10 @@
 
     protected override void OnInitialized()
     {
-        Jinja = new Jinja()
+        Jinja = new Data.Jinja()
         {
-            SaijinList = new List<Saijin>(),
-            Location = new Location(),
+            SaijinList = new List<Data.Saijin>(),
+            Location = new Data.Location(),
         };
         RyouseikokuList = jinjadb.RyouseikokuDbSet;
         MainShinmeiList = jinjadb.KamiDbSet.Select(k => k.ShinmeiList.First());
@@ -171,7 +171,7 @@
 
         if (IsGoshuin)
         {
-            var goshuin = new Goshuin()
+            var goshuin = new Data.Goshuin()
             {
                 Jinja = Jinja,
                 VisitDate = DateTime.Now,
@@ -194,7 +194,7 @@
 
     protected void AddSaijin()
     {
-        var saijin = new Saijin()
+        var saijin = new Data.Saijin()
         {
             Jinja = Jinja,
             Kami = null,
@@ -213,7 +213,7 @@
         else
         {
             var geo = await Data.Geolocation.GetAsync(jsruntime, httpClient, jinjadb);
-            Jinja.Location = new Location(geo, jinjadb);
+            Jinja.Location = new Data.Location(geo, jinjadb);
         }
 
         IsAutoLocation = !IsAutoLocation;

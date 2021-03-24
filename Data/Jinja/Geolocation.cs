@@ -6,13 +6,13 @@ using Microsoft.JSInterop;
 using System.Text.Json;
 using System.Net.Http;
 
-namespace Wadatsumi.Data
+namespace Wadatsumi.Jinja.Data
 {
     public class Geolocation
     {
         private IJSRuntime Runtime { get; init; }
         private IJSObjectReference JSGeolocationModule { get; set; }
-        private Jinja.JinjaDbContext JinjaDB { get; set; }
+        private JinjaDbContext JinjaDB { get; set; }
         private HttpClient HttpClient { get; init; }
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
@@ -22,7 +22,7 @@ namespace Wadatsumi.Data
         public string Municipality { get; private set; }
         public string Address { get; private set; }
 
-        public Geolocation(IJSRuntime jsruntime, HttpClient httpClient, Jinja.JinjaDbContext jinjadb = null)
+        public Geolocation(IJSRuntime jsruntime, HttpClient httpClient, JinjaDbContext jinjadb = null)
         {
             Runtime = jsruntime;
             jsruntime.InvokeAsync<IJSObjectReference>("import", "./js/geolocation.js");
@@ -79,7 +79,7 @@ namespace Wadatsumi.Data
             Address = results.GetProperty("lv01Nm").GetString();
         }
 
-        public static async Task<Geolocation> GetAsync(IJSRuntime jsruntime, HttpClient httpClient, Jinja.JinjaDbContext jinjadb = null)
+        public static async Task<Geolocation> GetAsync(IJSRuntime jsruntime, HttpClient httpClient, JinjaDbContext jinjadb = null)
         {
             var geo = new Geolocation(jsruntime, httpClient, jinjadb);
             await geo.LoadAsync();

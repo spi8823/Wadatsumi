@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Wadatsumi.Data.Jinja
+namespace Wadatsumi.Jinja.Data
 {
     public class Kami
     {

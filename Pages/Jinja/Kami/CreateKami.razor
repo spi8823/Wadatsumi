@@ -1,5 +1,6 @@
-﻿@page "/Jinja/Kami/New"
-@inject Data.Jinja.JinjaDbContext jinjadb
+﻿@namespace Wadatsumi.Jinja.Pages.Kami
+@page "/Jinja/Kami/New"
+@inject Data.JinjaDbContext jinjadb
 @inject NavigationManager navigation
 @using Radzen.Blazor
 
@@ -26,18 +27,18 @@
 <RadzenButton Click="@(args => Create())">適用</RadzenButton>
 
 @code {
-    private Data.Jinja.Kami Kami { get; set; }
+    private Data.Kami Kami { get; set; }
     protected override void OnInitialized()
     {
-        Kami = new Data.Jinja.Kami()
+        Kami = new Data.Kami()
         {
-            ShinmeiList = new List<Data.Jinja.Shinmei>(),
+            ShinmeiList = new List<Data.Shinmei>(),
         };
     }
 
     protected void AddShinmei()
     {
-        Kami.ShinmeiList.Add(new Data.Jinja.Shinmei());
+        Kami.ShinmeiList.Add(new Data.Shinmei());
         StateHasChanged();
     }
 

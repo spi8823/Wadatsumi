@@ -1,6 +1,7 @@
-﻿@page "/Jinja/Kami/Edit/{ID:int}"
+﻿@namespace Wadatsumi.Jinja.Pages.Kami
+@page "/Jinja/Kami/Edit/{ID:int}"
 
-@inject Data.Jinja.JinjaDbContext jinjadb
+@inject Data.JinjaDbContext jinjadb
 @inject NavigationManager navigation
 @using Radzen.Blazor
 
@@ -29,7 +30,7 @@
 @code {
     [Parameter]
     public int ID { get; set; }
-    private Data.Jinja.Kami Kami { get; set; }
+    private Data.Kami Kami { get; set; }
     protected override void OnInitialized()
     {
         Kami = jinjadb.KamiDbSet.Find(ID);
@@ -37,7 +38,7 @@
 
     protected void AddShinmei()
     {
-        Kami.ShinmeiList.Add(new Data.Jinja.Shinmei());
+        Kami.ShinmeiList.Add(new Data.Shinmei());
         StateHasChanged();
     }
 

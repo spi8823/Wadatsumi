@@ -1,35 +1,35 @@
-﻿@page "/Jinja/Kami/List"
+﻿@namespace Wadatsumi.Jinja.Pages.Kami
+@page "/Jinja/Kami/List"
 @using Radzen.Blazor
-@using Data.Jinja
 @using Microsoft.AspNetCore.Components.Web
-@inject JinjaDbContext jinjadb
-@inject NavigationManager navigation 
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
 
 <h2>神名一覧</h2>
-<RadzenGrid TItem="Kami" Data="KamiList" ExpandMode="Radzen.DataGridExpandMode.Single">
+<RadzenGrid TItem="Data.Kami" Data="KamiList" ExpandMode="Radzen.DataGridExpandMode.Single">
     <Columns>
-        <RadzenGridColumn TItem="Kami" Property="ID" Title="ID" Type="integer" Width="60px" TextAlign="Radzen.TextAlign.Center">
+        <RadzenGridColumn TItem="Data.Kami" Property="ID" Title="ID" Type="integer" Width="60px" TextAlign="Radzen.TextAlign.Center">
             <Template Context="kami">
                 <div>@kami.ID</div>
             </Template>
         </RadzenGridColumn>
-        <RadzenGridColumn TItem="Kami" Title="名前">
+        <RadzenGridColumn TItem="Data.Kami" Title="名前">
             <Template Context="kami">
                 <div>@kami.ShinmeiList.First().Name</div>
             </Template>
         </RadzenGridColumn>
-        <RadzenGridColumn TItem="Kami" Width="180px">
+        <RadzenGridColumn TItem="Data.Kami" Width="180px">
             <Template Context="kami">
                 <RadzenButton Click="@(args => navigation.NavigateTo($"/Jinja/Kami/Edit/{kami.ID}"))" Style="width:160px">編集する</RadzenButton>
             </Template>
         </RadzenGridColumn>
     </Columns>
 </RadzenGrid>
-<br/>
+<br />
 <RadzenButton Click="@(args => navigation.NavigateTo("/Jinja/Kami/New"))">追加する</RadzenButton>
 
-@code { 
-    private IEnumerable<Kami> KamiList { get; set; }
+@code {
+    private IEnumerable<Data.Kami> KamiList { get; set; }
     protected override void OnInitialized()
     {
         KamiList = jinjadb.KamiDbSet;

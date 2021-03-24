@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Data.SQLite;
 
-namespace Wadatsumi.Data.Jinja
+namespace Wadatsumi.Jinja.Data
 {
     public class TableAccessor<T> where T : struct
     {

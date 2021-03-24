@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 
-namespace Wadatsumi.Data.Jinja
+namespace Wadatsumi.Jinja.Data
 {
     public class JinjaDbContext : DbContext
     {

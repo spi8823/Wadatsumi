@@ -1,8 +1,8 @@
-﻿@page "/Jinja/Initialize"
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/Initialize"
 @using Radzen.Blazor
-@using Data.Jinja
 @using Microsoft.EntityFrameworkCore;
-@inject JinjaDbContext jinjadb
+@inject Data.JinjaDbContext jinjadb
 @inject IJSRuntime jsruntime 
 @inject HttpClient httpClient 
 
@@ -22,13 +22,13 @@
             var values = line.Split('\t');
             if (!jinjadb.RegionDbSet.Any(r => r.Name == values[3]))
             {
-                var newregion = new Region() { Name = values[3] };
+                var newregion = new Data.Region() { Name = values[3] };
                 jinjadb.RegionDbSet.Add(newregion).State = EntityState.Added;
                 jinjadb.SaveChanges();
             }
 
             var region = jinjadb.RegionDbSet.First(r => r.Name == values[3]);
-            var ryouseikoku = new Ryouseikoku()
+            var ryouseikoku = new Data.Ryouseikoku()
             {
                 Name = values[1],
                 Region = region,
@@ -42,7 +42,7 @@
         var module = await jsruntime.InvokeAsync<Microsoft.JSInterop.IJSObjectReference>("import", "./js/geolocation.js");
         for (var i = 1; i <= 47; i++)
         {
-            Prefecture prefecture = null;
+            Data.Prefecture prefecture = null;
             if(jinjadb.PrefectureDbSet.Count() != 0 && jinjadb.PrefectureDbSet.Any(p => p.ID == i))
                 prefecture = jinjadb.PrefectureDbSet.First(p => p.ID == i);
 
@@ -57,7 +57,7 @@
                 if(prefecture == null)
                 {
                     var prefectureName = values[1];
-                    prefecture = new Prefecture()
+                    prefecture = new Data.Prefecture()
                     {
                         Name = prefectureName,
                     };
@@ -70,7 +70,7 @@
 
                 var municipalityName = values[3];
 
-                var municipality = new Municipality()
+                var municipality = new Data.Municipality()
                 {
                     Name = municipalityName,
                     Prefecture = prefecture,
