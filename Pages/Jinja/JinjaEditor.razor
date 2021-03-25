@@ -1,0 +1,154 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@using Radzen.Blazor
+@inject IJSRuntime jsruntime
+@inject HttpClient httpClient
+@inject Data.JinjaDbContext jinjadb
+
+@code {
+    [Parameter]
+    public Data.Jinja Jinja { get; set; }
+    private bool IsAutoLocation { get; set; } = false;
+
+    protected void AddSaijin()
+    {
+        var saijin = new Data.Saijin()
+        {
+            Jinja = Jinja,
+            Kami = null,
+        };
+        Jinja.SaijinList.Add(saijin);
+        StateHasChanged();
+    }
+
+    protected async Task SwitchAutoLocation()
+    {
+        if (IsAutoLocation)
+        {
+            Jinja.Location.Prefecture = null;
+            Jinja.Location.Municipality = null;
+        }
+        else
+        {
+            var geo = await Data.Geolocation.GetAsync(jsruntime, httpClient, jinjadb);
+            Jinja.Location = new Data.Location(geo, jinjadb);
+        }
+
+        IsAutoLocation = !IsAutoLocation;
+        StateHasChanged();
+    }
+}
+
+<div class="col-xl-1 col-lg-2 col-3 text-left"><h2>名称</h2></div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>表記</h3></div>
+    <div><RadzenTextBox Style="font-size:16px" Value="@Jinja.Name" Change=@(value => Jinja.Name = value)></RadzenTextBox></div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>読み</h3></div>
+    <div><RadzenTextBox Style="font-size:16px" Value="@Jinja.Kana" Change=@(value => Jinja.Kana = value)></RadzenTextBox></div>
+</div>
+
+<hr />
+
+
+<div class="col-xl-1 col-lg-2 col-3 text-left"><h2>場所</h2></div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>都道府県</h3></div>
+    @if (IsAutoLocation)
+    {
+        <div><h4>@Jinja.Location.Prefecture.Name</h4></div>
+    }
+    else
+    {
+        <div>
+            <RadzenDropDown TValue="Data.Prefecture"
+                            Data="@jinjadb.PrefectureDbSet"
+                            Context="prefecture"
+                            Change="@(p => Jinja.Location.Prefecture = (Data.Prefecture)p)">
+                <Template>
+                    @prefecture.Name
+                </Template>
+            </RadzenDropDown>
+        </div>
+    }
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>市区町村</h3></div>
+    @if (IsAutoLocation)
+    {
+        <div><h4>@Jinja.Location.Municipality.Name</h4></div>
+    }
+    else
+    {
+        if (Jinja.Location.Prefecture != null)
+        {
+            <div>
+                <RadzenDropDown TValue="Data.Municipality"
+                                Data="@jinjadb.MunicipalityDbSet.Where(m => m.Prefecture.ID == Jinja.Location.Prefecture.ID)"
+                                Context="municipality"
+                                Change="@(m => Jinja.Location.Municipality = (Data.Municipality)m)">
+                    <Template>
+                        @municipality.Name
+                    </Template>
+                </RadzenDropDown>
+            </div>
+        }
+    }
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>住所</h3></div>
+    <div>
+        <RadzenTextBox Value="@Jinja.Location.Address" Change="@(t => Jinja.Location.Address = t)"></RadzenTextBox>
+    </div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3></h3></div>
+    <div>
+        <RadzenButton Click="SwitchAutoLocation">
+            @if (IsAutoLocation)
+            {
+                @:手動入力
+            }
+            else
+            {
+                @:自動取得
+            }
+        </RadzenButton>
+    </div>
+</div>
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>令制国</h3></div>
+    <div>
+        <RadzenDropDown TValue="Data.Ryouseikoku" Data=@jinjadb.RyouseikokuDbSet Context="ryouseikoku" Change="@(r => Jinja.Ryouseikoku = (Data.Ryouseikoku)r)">
+            <Template>
+                [@ryouseikoku.Region.Name]@ryouseikoku.Name
+            </Template>
+        </RadzenDropDown>
+    </div>
+</div>
+
+<hr />
+
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-left"><h2>祭神</h2></div>
+    <div>
+        <RadzenButton Click=AddSaijin>追加</RadzenButton>
+        <br />
+    </div>
+</div>
+@{
+    var shinmeiList = jinjadb.KamiDbSet.Select(k => k.ShinmeiList.First());
+    for (var i = 0; i < Jinja.SaijinList.Count; i++)
+    {
+        var index = i;
+        <div class="row d-flex flex-row align-items-center">
+            <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>祭神@(i + 1)</h3></div>
+            <div>
+                <RadzenDropDownDataGrid TValue="Data.Shinmei" Data=@shinmeiList TextProperty="Name"
+                                        Change="@(s => Jinja.SaijinList[index].Kami = (s as Data.Shinmei).Kami)">
+
+                </RadzenDropDownDataGrid>
+            </div>
+        </div>
+    }
+}
