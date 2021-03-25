@@ -32,6 +32,7 @@ namespace Wadatsumi
             services.AddSingleton<Data.Cod.MatchResultService>();
             services.AddDbContext<Jinja.Data.JinjaDbContext>();
             services.AddSingleton<System.Net.Http.HttpClient>();
+            services.AddScoped<Radzen.DialogService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

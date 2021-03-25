@@ -1,0 +1,30 @@
+﻿@page "/Jinja/Goshuin/Edit/{ID:int}"
+@namespace Wadatsumi.Jinja.Pages.Goshuin 
+@using Radzen.Blazor
+@inject Data.JinjaDbContext jinjadb
+
+<RadzenHtmlEditor @bind-Value="TravelogueText">
+
+</RadzenHtmlEditor>
+<RadzenButton Click="Save">保存</RadzenButton>
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+
+    private Data.Goshuin Goshuin { get; set; }
+
+    private string TravelogueText { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Goshuin = jinjadb.GoshuinDbSet.Find(ID);
+        TravelogueText = Goshuin.LoadTravelogue();
+        base.OnParametersSet();
+    }
+
+    private void Save()
+    {
+        Goshuin.SaveTravelogue(TravelogueText);
+    }
+}
