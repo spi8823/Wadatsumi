@@ -3,6 +3,10 @@
 @using Radzen.Blazor
 @inject Data.JinjaDbContext jinjadb
 
+<h2>@Goshuin.Jinja.Name</h2>
+
+<RadzenDatePicker @bind-Value="Goshuin.VisitDate" ShowTime="true" DateFormat="yyyy/MM/dd HH:mm"></RadzenDatePicker>
+
 <RadzenHtmlEditor @bind-Value="TravelogueText">
 
 </RadzenHtmlEditor>

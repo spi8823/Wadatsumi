@@ -13,5 +13,19 @@ namespace Wadatsumi.Jinja.Data
         public const string ImagesFolderPath = JinjaResourceRootPath + "images/";
 
         public static string GetGoshuinTraveloguePath(int id) => $"{GoshuinRootPath}{id}/travelogue.html";
+
+        public const string RootUrl = "/Jinja";
+        public const string JinjaNewUrl = RootUrl + "/New";
+        public const string JinjaListUrl = RootUrl + "/List";
+        public static string JinjaEditUrl(int id) => $"{RootUrl}/Edit/{id}";
+
+        public const string GoshuinRootUrl = RootUrl + "/Goshuin";
+        public static string GoshuinEditUrl(int id) => $"{GoshuinRootUrl}/Edit/{id}";
+
+        public const string KamiRootUrl = RootUrl + "/Kami";
+        public const string KamiNewUrl = KamiRootUrl + "/New";
+        public const string KamiListUrl = KamiRootUrl + "/List";
+        public static string KamiUrl(int id) => $"{KamiRootUrl}/{id}";
+        public static string KamiEditUrl(int id) => $"{KamiRootUrl}/Edit/{id}";
     }
 }

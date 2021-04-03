@@ -48,6 +48,6 @@
         jinjadb.Entry(Kami).State = Microsoft.EntityFrameworkCore.EntityState.Added;
         jinjadb.SaveChanges();
 
-        navigation.NavigateTo($"/Jinja/Kami/list");
+        navigation.NavigateTo(Data.PathDefine.KamiListUrl);
     }
 }

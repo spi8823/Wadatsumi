@@ -20,13 +20,13 @@
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Kami" Width="180px">
             <Template Context="kami">
-                <RadzenButton Click="@(args => navigation.NavigateTo($"/Jinja/Kami/Edit/{kami.ID}"))" Style="width:160px">編集する</RadzenButton>
+                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.KamiEditUrl(kami.ID)))" Style="width:160px">編集する</RadzenButton>
             </Template>
         </RadzenGridColumn>
     </Columns>
 </RadzenGrid>
 <br />
-<RadzenButton Click="@(args => navigation.NavigateTo("/Jinja/Kami/New"))">追加する</RadzenButton>
+<RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.KamiNewUrl))">追加する</RadzenButton>
 
 @code {
     private IEnumerable<Data.Kami> KamiList { get; set; }

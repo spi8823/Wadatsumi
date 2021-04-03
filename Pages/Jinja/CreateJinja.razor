@@ -2,11 +2,8 @@
 @page "/Jinja/New"
 @using Radzen.Blazor
 @using Microsoft.EntityFrameworkCore
-@using System.Text.Json
 @inject Data.JinjaDbContext jinjadb
 @inject NavigationManager navigation
-@inject IJSRuntime jsruntime
-@inject HttpClient httpClient
 
 <h1>神社追加</h1>
 
@@ -60,7 +57,7 @@
             goshuin = new Data.Goshuin()
             {
                 Jinja = Jinja,
-                VisitDate = DateTime.Now,
+                VisitDate = DateTime.Now.AddSeconds(-DateTime.Now.Second),
             };
             jinjadb.GoshuinDbSet.Add(goshuin);
             jinjadb.Entry(goshuin).State = EntityState.Added;
@@ -69,7 +66,7 @@
         jinjadb.SaveChanges();
 
         if (IsGoshuin)
-            navigation.NavigateTo($"/Jinja/Goshuin/Edit/{goshuin.ID}");
+            navigation.NavigateTo(Data.PathDefine.GoshuinEditUrl(goshuin.ID));
     }
 
     protected override void OnAfterRender(bool firstRender)

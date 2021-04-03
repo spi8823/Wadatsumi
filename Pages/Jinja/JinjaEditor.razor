@@ -7,7 +7,9 @@
 @code {
     [Parameter]
     public Data.Jinja Jinja { get; set; }
-    private bool IsAutoLocation { get; set; } = false;
+
+    [Parameter]
+    public bool IsAutoLocation { get; set; } = false;
 
     protected void AddSaijin()
     {
@@ -119,7 +121,7 @@
 <div class="row d-flex flex-row align-items-center">
     <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>令制国</h3></div>
     <div>
-        <RadzenDropDown TValue="Data.Ryouseikoku" Data=@jinjadb.RyouseikokuDbSet Context="ryouseikoku" Change="@(r => Jinja.Ryouseikoku = (Data.Ryouseikoku)r)">
+        <RadzenDropDown TValue="Data.Ryouseikoku" Data=@jinjadb.RyouseikokuDbSet Value="Jinja.Ryouseikoku" Context="ryouseikoku" Change="@(r => Jinja.Ryouseikoku = (Data.Ryouseikoku)r)">
             <Template>
                 [@ryouseikoku.Region.Name]@ryouseikoku.Name
             </Template>

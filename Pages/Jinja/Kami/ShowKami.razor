@@ -16,7 +16,7 @@
         Kami = jinjadb.KamiDbSet.Find(ID);
         if (Kami == null)
         {
-            navigation.NavigateTo("/Jinja/Kami/New");
+            navigation.NavigateTo(Data.PathDefine.KamiNewUrl);
             return;
         }
         StateHasChanged();

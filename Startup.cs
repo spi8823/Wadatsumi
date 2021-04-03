@@ -28,7 +28,6 @@ namespace Wadatsumi
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<Data.Cod.MatchResultService>();
             services.AddDbContext<Jinja.Data.JinjaDbContext>();
             services.AddSingleton<System.Net.Http.HttpClient>();

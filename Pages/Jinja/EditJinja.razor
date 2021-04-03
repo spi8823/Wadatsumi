@@ -1,0 +1,45 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/Edit/{ID:int}"
+@using Radzen.Blazor
+@using Microsoft.EntityFrameworkCore
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+
+<h1>神社編集</h1>
+
+@if (Jinja != null)
+{
+    <JinjaEditor Jinja="Jinja" IsAutoLocation="true"></JinjaEditor>
+}
+
+<hr />
+
+<br />
+
+<div class="row d-flex flex-row align-items-center">
+    <div class="col-xl-1 col-lg-2 col-3 text-right"></div>
+    <div>
+        <RadzenButton Click=Save>保存</RadzenButton>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public int ID { get; set; }
+    private Data.Jinja Jinja { get; set; }
+    private bool IsGoshuin { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        Jinja = jinjadb.JinjaDbSet.Find(ID);
+        base.OnInitialized();
+    }
+
+    protected void Save()
+    {
+        Jinja.SaijinList.RemoveAll(s => s == null || s.Kami == null);
+        jinjadb.Entry(Jinja).State = EntityState.Modified;
+
+        jinjadb.SaveChanges();
+    }
+}

@@ -1,0 +1,34 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/List"
+@using Radzen.Blazor
+@using Microsoft.EntityFrameworkCore
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+
+@code{
+    private List<Data.Jinja> JinjaList { get; set; }
+    protected override void OnInitialized()
+    {
+        JinjaList = jinjadb.JinjaDbSet.ToList();
+        JinjaList.Sort((jinja1, jinja2) => jinja1.Location.Prefecture.ID - jinja2.Location.Prefecture.ID);
+        base.OnInitialized();
+    }
+}
+
+<h1>神社一覧</h1>
+
+<RadzenGrid Data="JinjaList" TItem="Data.Jinja">
+    <Columns>
+        <RadzenGridColumn TItem="Data.Jinja" Title="名前" Property="Name" />
+        <RadzenGridColumn TItem="Data.Jinja" Title="都道府県">
+            <Template Context="jinja">
+                @jinja.Location.Prefecture.Name
+            </Template>
+        </RadzenGridColumn>
+        <RadzenGridColumn TItem="Data.Jinja" Title="">
+            <Template Context="jinja">
+                <RadzenButton Click="@(() => navigation.NavigateTo(Data.PathDefine.JinjaEditUrl(jinja.ID)))">編集</RadzenButton>
+            </Template>
+        </RadzenGridColumn>
+    </Columns>
+</RadzenGrid>
