@@ -27,6 +27,11 @@
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Jinja" Title="">
             <Template Context="jinja">
+                <RadzenButton Click="@(() => navigation.NavigateTo(Data.PathDefine.JinjaUrl(jinja.ID)))">詳細</RadzenButton>
+            </Template>
+        </RadzenGridColumn>
+        <RadzenGridColumn TItem="Data.Jinja" Title="">
+            <Template Context="jinja">
                 <RadzenButton Click="@(() => navigation.NavigateTo(Data.PathDefine.JinjaEditUrl(jinja.ID)))">編集</RadzenButton>
             </Template>
         </RadzenGridColumn>
