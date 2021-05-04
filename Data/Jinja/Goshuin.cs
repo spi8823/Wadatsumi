@@ -14,18 +14,13 @@ namespace Wadatsumi.Jinja.Data
         public string LoadTravelogue()
         {
             var filepath = PathDefine.GetGoshuinTraveloguePath(ID);
-            if (System.IO.File.Exists(filepath))
-                return File.ReadAllText(PathDefine.GetGoshuinTraveloguePath(ID));
-            else
-                return "";
+            return PathDefine.LoadFile(filepath);
         }
 
         public void SaveTravelogue(string content)
         {
             var filepath = PathDefine.GetGoshuinTraveloguePath(ID);
-            if (!File.Exists(filepath))
-                Directory.CreateDirectory(Path.GetDirectoryName(filepath));
-            File.WriteAllText(filepath, content, System.Text.Encoding.UTF8);
+            PathDefine.SaveFile(filepath, content);
         }
     }
 }

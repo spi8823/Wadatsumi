@@ -24,6 +24,9 @@ namespace Wadatsumi.Jinja.Data
         public DbSet<Municipality> MunicipalityDbSet { get; set; }
         public DbSet<Location> LocationDbSet { get; set; }
 
+        public DbSet<Theory> TheoryDbSet { get; set; }
+        public DbSet<TheoryRelation> TheoryRelationDbSet { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder

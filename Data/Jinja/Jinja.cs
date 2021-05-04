@@ -14,6 +14,19 @@ namespace Wadatsumi.Jinja.Data
         public virtual Location Location { get; set; }
         public virtual Ryouseikoku Ryouseikoku { get; set; }
         public virtual List<Saijin> SaijinList { get; set; }
+        public virtual List<TheoryRelation> TheoryList { get; set; }
+
+        public string LoadArticle()
+        {
+            var filepath = PathDefine.GetJinjaAriticlePath(ID);
+            return PathDefine.LoadFile(filepath);
+        }
+
+        public void SaveArticle(string content)
+        {
+            var filepath = PathDefine.GetJinjaAriticlePath(ID);
+            PathDefine.SaveFile(filepath, content);
+        }
     }
 
     public class Saijin

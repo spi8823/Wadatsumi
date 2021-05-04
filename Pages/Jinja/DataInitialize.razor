@@ -82,6 +82,9 @@
                     jinjadb.SaveChanges();
                 }
             }
+
+            Text = $"実行中[{string.Join(null, Enumerable.Repeat(".", i))}{string.Join(null, Enumerable.Repeat(" ", 47 - i))}]";
+            StateHasChanged();
         }
 
         jinjadb.SaveChanges();

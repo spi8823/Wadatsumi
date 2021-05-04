@@ -9,6 +9,7 @@ namespace Wadatsumi.Jinja.Data
     {
         public int ID { get; set; }
         public virtual ICollection<Shinmei> ShinmeiList { get; set; }
+        public virtual ICollection<Theory> TheoryList { get; set; }
     }
 
     public class Shinmei

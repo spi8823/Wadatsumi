@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Wadatsumi.Jinja.Data
 {
     public static class PathDefine
     {
-        public const string JinjaResourceRootPath = "wwwroot/jinja_resource/";
-        public const string GoshuinRootPath = JinjaResourceRootPath + "goshuin/";
-        public const string JinjaDBFilePath = JinjaResourceRootPath + "jinja.db";
-        public const string ImagesFolderPath = JinjaResourceRootPath + "images/";
-
-        public static string GetGoshuinTraveloguePath(int id) => $"{GoshuinRootPath}{id}/travelogue.html";
+        public const string JinjaResourceRootPath = "wwwroot/jinja_resource";
+        public const string JinjaRootPath = JinjaResourceRootPath + "/jinja";
+        public const string GoshuinRootPath = JinjaResourceRootPath + "/goshuin";
+        public const string TheoryRootPath = JinjaResourceRootPath + "/theory";
+        public const string JinjaDBFilePath = JinjaResourceRootPath + "/jinja.db";
+        public const string ImagesFolderPath = JinjaResourceRootPath + "/images";
+        public static string GetJinjaAriticlePath(int id) => $"{JinjaRootPath}/{id}/article.html";
+        public static string GetGoshuinTraveloguePath(int id) => $"{GoshuinRootPath}/{id}/travelogue.html";
+        public static string GetTheoryArticlePath(int id) => $"{TheoryRootPath}/{id}/article.html";
 
         public const string RootUrl = "/Jinja";
         public const string JinjaNewUrl = RootUrl + "/New";
@@ -27,5 +31,20 @@ namespace Wadatsumi.Jinja.Data
         public const string KamiListUrl = KamiRootUrl + "/List";
         public static string KamiUrl(int id) => $"{KamiRootUrl}/{id}";
         public static string KamiEditUrl(int id) => $"{KamiRootUrl}/Edit/{id}";
+
+        public static string LoadFile(string filepath)
+        {
+            if (File.Exists(filepath))
+                return File.ReadAllText(filepath);
+            else
+                return "";
+        }
+
+        public static void SaveFile(string filepath, string content)
+        {
+            if (!File.Exists(filepath))
+                Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+            File.WriteAllText(filepath, content, System.Text.Encoding.UTF8);
+        }
     }
 }

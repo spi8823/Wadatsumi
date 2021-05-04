@@ -10,6 +10,7 @@
 @if (Jinja != null)
 {
     <JinjaEditor Jinja="Jinja" IsAutoLocation="true"></JinjaEditor>
+    <RadzenHtmlEditor @bind-Value="ArticleText"></RadzenHtmlEditor>
 }
 
 <hr />
@@ -28,15 +29,19 @@
     public int ID { get; set; }
     private Data.Jinja Jinja { get; set; }
     private bool IsGoshuin { get; set; } = false;
+    private string ArticleText { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         Jinja = jinjadb.JinjaDbSet.Find(ID);
-        base.OnInitialized();
+        ArticleText = Jinja.LoadArticle();
+        base.OnParametersSet();
     }
 
     protected void Save()
     {
+        Jinja.SaveArticle(ArticleText);
+
         Jinja.SaijinList.RemoveAll(s => s == null || s.Kami == null);
         jinjadb.Entry(Jinja).State = EntityState.Modified;
 
