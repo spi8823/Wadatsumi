@@ -21,6 +21,7 @@ namespace Wadatsumi.Jinja.Data
         public const string RootUrl = "/Jinja";
         public const string JinjaNewUrl = RootUrl + "/New";
         public const string JinjaListUrl = RootUrl + "/List";
+        public static string JinjaUrl(int id) => $"{RootUrl}/{id}";
         public static string JinjaEditUrl(int id) => $"{RootUrl}/Edit/{id}";
 
         public const string GoshuinRootUrl = RootUrl + "/Goshuin";
@@ -31,6 +32,12 @@ namespace Wadatsumi.Jinja.Data
         public const string KamiListUrl = KamiRootUrl + "/List";
         public static string KamiUrl(int id) => $"{KamiRootUrl}/{id}";
         public static string KamiEditUrl(int id) => $"{KamiRootUrl}/Edit/{id}";
+
+        public const string TheoryRootUrl = RootUrl + "/Theory";
+        public const string TheoryNewUrl = TheoryRootUrl + "/New";
+        public const string TheoryListUrl = TheoryRootUrl + "/List";
+        public static string TheoryUrl(int id) => $"{TheoryRootUrl}/{id}";
+        public static string TheoryEditUrl(int id) => $"{TheoryRootUrl}/Edit/{id}";
 
         public static string LoadFile(string filepath)
         {

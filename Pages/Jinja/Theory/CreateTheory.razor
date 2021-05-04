@@ -1,0 +1,26 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/Theory/New"
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+@using Radzen.Blazor
+
+<h2>論追加</h2>
+<h3>タイトル</h3>
+<RadzenTextBox @bind-Value="Theory.Title"></RadzenTextBox>
+<RadzenButton Click="Create">保存</RadzenButton>
+
+@code{
+    private Data.Theory Theory { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Theory = new Data.Theory();
+        base.OnInitialized();
+    }
+
+    protected void Create()
+    {
+        jinjadb.TheoryDbSet.Add(Theory).State = Microsoft.EntityFrameworkCore.EntityState.Added;
+        jinjadb.SaveChanges();
+    }
+}

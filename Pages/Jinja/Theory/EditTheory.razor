@@ -1,0 +1,32 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/Theory/Edit/{ID:int}"
+
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+@using Radzen.Blazor   
+
+@code{
+    [Parameter]
+    public int ID { get; set; }
+    private Data.Theory Theory { get; set; }
+    private string ArticleText { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Theory = jinjadb.TheoryDbSet.Find(ID);
+        ArticleText = Theory.LoadArticle();
+        base.OnParametersSet();
+    }
+
+    private void Apply()
+    {
+        Theory.SaveArticle(ArticleText);
+        jinjadb.Entry(Theory).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        jinjadb.SaveChanges();
+        navigation.NavigateTo(Data.PathDefine.TheoryUrl(Theory.ID));
+    }
+}
+
+<RadzenTextBox @bind-Value="Theory.Title"></RadzenTextBox>
+<RadzenHtmlEditor @bind-Value="ArticleText"></RadzenHtmlEditor>
+<RadzenButton Click="Apply">適用</RadzenButton>

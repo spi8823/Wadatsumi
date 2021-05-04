@@ -1,0 +1,38 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/Theory/List"
+@using Radzen.Blazor
+@using Wadatsumi.Jinja 
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+
+@code{
+    private IEnumerable<Data.Theory> TheoryList { get; set; }
+    protected override void OnInitialized()
+    {
+        TheoryList = jinjadb.TheoryDbSet;
+        base.OnInitialized();
+    }
+}
+
+<h2>説一覧</h2>
+<RadzenGrid TItem="Data.Theory" Data="TheoryList" ExpandMode="Radzen.DataGridExpandMode.Single">
+    <Columns>
+        <RadzenGridColumn TItem="Data.Theory" Property="Title" Type="string" TextAlign="Radzen.TextAlign.Left">
+            <Template Context="theory">
+                <div>@theory.Title</div>
+            </Template>
+        </RadzenGridColumn>
+        <RadzenGridColumn TItem="Data.Theory">
+            <Template Context="theory">
+                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.TheoryUrl(theory.ID)))">詳細</RadzenButton>
+            </Template>
+        </RadzenGridColumn>
+        <RadzenGridColumn TItem="Data.Theory">
+            <Template Context="theory">
+                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.TheoryEditUrl(theory.ID)))">編集</RadzenButton>
+            </Template>
+        </RadzenGridColumn>
+    </Columns>
+</RadzenGrid> 
+<br/>
+<RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.TheoryNewUrl))">追加する</RadzenButton>
