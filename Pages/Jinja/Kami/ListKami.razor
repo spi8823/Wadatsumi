@@ -20,7 +20,12 @@
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Kami" Width="180px">
             <Template Context="kami">
-                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.KamiEditUrl(kami.ID)))" Style="width:160px">編集する</RadzenButton>
+                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.KamiUrl(kami.ID)))" Style="width:160px">詳細</RadzenButton>
+            </Template>
+        </RadzenGridColumn>
+        <RadzenGridColumn TItem="Data.Kami" Width="180px">
+            <Template Context="kami">
+                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.KamiEditUrl(kami.ID)))" Style="width:160px">編集</RadzenButton>
             </Template>
         </RadzenGridColumn>
     </Columns>
