@@ -4,6 +4,7 @@
 @inject Data.JinjaDbContext jinjadb
 @inject NavigationManager navigation
 @using Radzen.Blazor   
+@using System.Linq
 
 @code{
     [Parameter]
@@ -25,8 +26,87 @@
         jinjadb.SaveChanges();
         navigation.NavigateTo(Data.PathDefine.TheoryUrl(Theory.ID));
     }
+
+    private void RemoveRelation(Data.TheoryRelation relation)
+    {
+        Theory.ReferenceList.Remove(relation);
+    }
+
+    private void AddJinjaReference(Data.Jinja jinja)
+    {
+        if (Theory.ReferenceList.Any(r => r.Jinja == jinja))
+            return;
+        Theory.ReferenceList.Add(new Data.TheoryRelation() { Theory = Theory, Jinja = jinja });
+        StateHasChanged();
+    }
+
+    private void AddKamiReference(Data.Kami kami)
+    {
+        if (Theory.ReferenceList.Any(r => r.Kami == kami))
+            return;
+        Theory.ReferenceList.Add(new Data.TheoryRelation() { Theory = Theory, Kami = kami });
+        StateHasChanged();
+    }
 }
 
-<RadzenTextBox @bind-Value="Theory.Title"></RadzenTextBox>
+<RadzenTextBox @bind-Value="Theory.Title" Style="width:500px"></RadzenTextBox>
+<br/>
+<br />
+
+<h3>関連項目</h3>
+<RadzenAccordion Multiple="true">
+    <Items>
+        <RadzenAccordionItem Text="関連神社">
+            <RadzenGrid TItem="Data.TheoryRelation" 
+                        Data="Theory.ReferenceList.Where(r => r.Jinja != null)"
+                        >
+                <Columns>
+                    <RadzenGridColumn TItem="Data.TheoryRelation" 
+                                      TextAlign="Radzen.TextAlign.Left">
+                        <Template Context="r">@r.Jinja.Name</Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Data.TheoryRelation">
+                        <Template Context="r"><RadzenButton Click="@(args => RemoveRelation(r))">消去</RadzenButton></Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+            <br />
+
+            <RadzenDropDownDataGrid TValue="Data.Jinja"
+                            Data="@jinjadb.JinjaDbSet"
+                            Context="jinja"
+                            Change="@(j => AddJinjaReference((Data.Jinja)j))">
+                <Template>@jinja.Name</Template>
+            </RadzenDropDownDataGrid>
+        </RadzenAccordionItem>
+
+        <RadzenAccordionItem Text="関連神">
+            <RadzenGrid TItem="Data.TheoryRelation" 
+                        Data="Theory.ReferenceList.Where(r => r.Kami != null)">
+                <Columns>
+                    <RadzenGridColumn TItem="Data.TheoryRelation" 
+                                      TextAlign="Radzen.TextAlign.Left">
+                        <Template Context="r">@r.Kami.ShinmeiList.First().Name</Template>
+                    </RadzenGridColumn>
+                    <RadzenGridColumn TItem="Data.TheoryRelation">
+                        <Template Context="r"><RadzenButton Click="@(args => RemoveRelation(r))">消去</RadzenButton></Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+            <br />
+
+            <RadzenDropDownDataGrid TValue="Data.Kami"
+                                    Data="@jinjadb.KamiDbSet"
+                                    Context="kami"
+                                    Change="@(k => AddKamiReference((Data.Kami)k))">
+                <Template>@((string)((kami.ShinmeiList as ICollection<Data.Shinmei>).First().Name))</Template>
+            </RadzenDropDownDataGrid>
+        </RadzenAccordionItem>
+    </Items>
+</RadzenAccordion>
+<br />
+
 <RadzenHtmlEditor @bind-Value="ArticleText"></RadzenHtmlEditor>
+<br />
+
 <RadzenButton Click="Apply">適用</RadzenButton>

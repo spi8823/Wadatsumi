@@ -19,12 +19,7 @@
     <Columns>
         <RadzenGridColumn TItem="Data.Theory" Property="Title" Type="string" TextAlign="Radzen.TextAlign.Left">
             <Template Context="theory">
-                <div>@theory.Title</div>
-            </Template>
-        </RadzenGridColumn>
-        <RadzenGridColumn TItem="Data.Theory">
-            <Template Context="theory">
-                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.TheoryUrl(theory.ID)))">詳細</RadzenButton>
+                <NavLink href="@Data.PathDefine.TheoryUrl(theory.ID)">@theory.Title</NavLink>
             </Template>
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Theory">
