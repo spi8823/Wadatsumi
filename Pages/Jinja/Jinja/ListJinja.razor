@@ -19,15 +19,14 @@
 
 <RadzenGrid Data="JinjaList" TItem="Data.Jinja">
     <Columns>
-        <RadzenGridColumn TItem="Data.Jinja" Title="名前" Property="Name" />
+        <RadzenGridColumn TItem="Data.Jinja" Title="名前" Property="Name" >
+            <Template Context="jinja">
+                <NavLink href="@Data.PathDefine.JinjaUrl(jinja.ID)">@jinja.Name</NavLink>
+            </Template>
+        </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Jinja" Title="都道府県">
             <Template Context="jinja">
                 @jinja.Location.Prefecture.Name
-            </Template>
-        </RadzenGridColumn>
-        <RadzenGridColumn TItem="Data.Jinja" Title="">
-            <Template Context="jinja">
-                <RadzenButton Click="@(() => navigation.NavigateTo(Data.PathDefine.JinjaUrl(jinja.ID)))">詳細</RadzenButton>
             </Template>
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Jinja" Title="">

@@ -8,14 +8,9 @@
 <h2>神名一覧</h2>
 <RadzenGrid TItem="Data.Kami" Data="KamiList" ExpandMode="Radzen.DataGridExpandMode.Single">
     <Columns>
-        <RadzenGridColumn TItem="Data.Kami" Property="ID" Title="ID" Type="integer" Width="60px" TextAlign="Radzen.TextAlign.Center">
-            <Template Context="kami">
-                <div>@kami.ID</div>
-            </Template>
-        </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Kami" Title="名前">
             <Template Context="kami">
-                <div>@kami.ShinmeiList.First().Name</div>
+                <NavLink href="@Data.PathDefine.KamiUrl(kami.ID)">@kami.ShinmeiList.First().Name</NavLink>
             </Template>
         </RadzenGridColumn>
         <RadzenGridColumn TItem="Data.Kami" Width="180px">
