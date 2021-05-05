@@ -21,6 +21,36 @@
 }
 
 <h2>@Theory.Title</h2>
+<br>
+<h3>関連項目</h3>
+<RadzenAccordion Multiple="true">
+    <Items>
+        <RadzenAccordionItem Text="関連神社">
+            <RadzenGrid TItem="Data.TheoryRelation"
+                        Data="Theory.ReferenceList.Where(r => r.Jinja != null)">
+                <Columns>
+                    <RadzenGridColumn TItem="Data.TheoryRelation"
+                                      TextAlign="Radzen.TextAlign.Left">
+                        <Template Context="r">@r.Jinja.Name</Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </RadzenAccordionItem>
+
+        <RadzenAccordionItem Text="関連神">
+            <RadzenGrid TItem="Data.TheoryRelation"
+                        Data="Theory.ReferenceList.Where(r => r.Kami != null)">
+                <Columns>
+                    <RadzenGridColumn TItem="Data.TheoryRelation"
+                                      TextAlign="Radzen.TextAlign.Left">
+                        <Template Context="r">@r.Kami.ShinmeiList.First().Name</Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+
+        </RadzenAccordionItem>
+    </Items>
+</RadzenAccordion>
 <RadzenHtml>@ArticleText</RadzenHtml>
 <br />
 <br />

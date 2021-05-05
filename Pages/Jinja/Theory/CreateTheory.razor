@@ -22,5 +22,6 @@
     {
         jinjadb.TheoryDbSet.Add(Theory).State = Microsoft.EntityFrameworkCore.EntityState.Added;
         jinjadb.SaveChanges();
+        navigation.NavigateTo(Data.PathDefine.TheoryEditUrl(Theory.ID));
     }
 }
