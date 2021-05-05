@@ -1,5 +1,19 @@
-﻿<h3>ShowJinja</h3>
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/{ID:int}"
+@using Radzen.Blazor
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
 
-@code {
+@code{
+    [Parameter]
+    public int ID { get; set; }
+    private Data.Jinja Jinja { get; set; }
+    private string ArticleText { get; set; }
 
-}
+    protected override void OnParametersSet()
+    {
+        Jinja = jinjadb.JinjaDbSet.Find(ID);
+        ArticleText = Jinja.LoadArticle();
+        base.OnParametersSet();
+    }
+}  
