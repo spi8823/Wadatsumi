@@ -185,3 +185,7 @@ app {
 .row{
     margin:5px 0px;
 }
+
+.components-reconnect-show, .components-reconnect-failed, .components-reconnect-rejected {
+    display: none;
+}
