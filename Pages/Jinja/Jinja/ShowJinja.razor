@@ -16,6 +16,15 @@
         ArticleText = Jinja.LoadArticle();
         base.OnParametersSet();
     }
+
+    private void AddGoshuin()
+    {
+        var goshuin = new Data.Goshuin() { Jinja = Jinja };
+        jinjadb.GoshuinDbSet.Add(goshuin).State = Microsoft.EntityFrameworkCore.EntityState.Added;
+        jinjadb.SaveChanges();
+
+        navigation.NavigateTo(Data.PathDefine.GoshuinEditUrl(goshuin.ID));
+    }
 }
 
 <h3>@($"{Jinja.Name}({Jinja.Kana})")</h3>
@@ -36,4 +45,5 @@
 </RadzenHtml>
 <br />
 
+<RadzenButton Click="AddGoshuin">御朱印追加</RadzenButton>
 <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.JinjaEditUrl(Jinja.ID)))">編集</RadzenButton>

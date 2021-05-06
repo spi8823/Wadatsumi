@@ -2,6 +2,7 @@
 @namespace Wadatsumi.Jinja.Pages.Goshuin 
 @using Radzen.Blazor
 @inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation 
 
 <h2>@Goshuin.Jinja.Name</h2>
 
@@ -30,5 +31,8 @@
     private void Save()
     {
         Goshuin.SaveTravelogue(TravelogueText);
+        jinjadb.Entry(Goshuin).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        jinjadb.SaveChanges();
+        navigation.NavigateTo(Data.PathDefine.GoshuinListUrl);
     }
 }

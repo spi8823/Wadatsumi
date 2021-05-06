@@ -25,6 +25,8 @@ namespace Wadatsumi.Jinja.Data
         public static string JinjaEditUrl(int id) => $"{RootUrl}/Edit/{id}";
 
         public const string GoshuinRootUrl = RootUrl + "/Goshuin";
+        public const string GoshuinListUrl = GoshuinRootUrl + "/List";
+        public static string GoshuinUrl(int id) => $"{GoshuinRootUrl}/{id}";
         public static string GoshuinEditUrl(int id) => $"{GoshuinRootUrl}/Edit/{id}";
 
         public const string KamiRootUrl = RootUrl + "/Kami";

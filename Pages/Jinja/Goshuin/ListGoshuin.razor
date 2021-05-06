@@ -1,0 +1,24 @@
+﻿@page "/Jinja/Goshuin/List"
+@namespace Wadatsumi.Jinja.Pages
+@using Radzen.Blazor
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+
+@code{
+}  
+
+<h2>御朱印一覧</h2>
+<RadzenGrid TItem="Data.Goshuin" Data="jinjadb.GoshuinDbSet">
+    <Columns>
+        <RadzenGridColumn TItem="Data.Goshuin" TextAlign="Radzen.TextAlign.Left">
+            <Template Context="goshuin">
+                <NavLink href="@Data.PathDefine.GoshuinUrl(goshuin.ID)">@($"{goshuin.Jinja.Name}({goshuin.VisitDate.ToString("yyyy年MM月dd日")})")</NavLink>
+            </Template>
+        </RadzenGridColumn>
+        <RadzenGridColumn TItem="Data.Goshuin">
+            <Template Context="goshuin">
+                <RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.GoshuinEditUrl(goshuin.ID)))">編集</RadzenButton>
+            </Template>
+        </RadzenGridColumn>
+    </Columns>
+</RadzenGrid>

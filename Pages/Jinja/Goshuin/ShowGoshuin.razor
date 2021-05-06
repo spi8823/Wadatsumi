@@ -1,0 +1,30 @@
+﻿@namespace Wadatsumi.Jinja.Pages
+@page "/Jinja/Goshuin/{ID:int}"
+@using Radzen.Blazor
+@inject Data.JinjaDbContext jinjadb
+@inject NavigationManager navigation
+
+@code{ 
+    [Parameter]
+    public int ID { get; set; }
+    private Data.Goshuin Goshuin { get; set; }
+    private string TravelogueText { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Goshuin = jinjadb.GoshuinDbSet.Find(ID);
+        TravelogueText = Goshuin.LoadTravelogue();
+        base.OnInitialized();
+    }
+} 
+
+<h2><NavLink href="@Data.PathDefine.JinjaUrl(Goshuin.Jinja.ID)">@Goshuin.Jinja.Name</NavLink></h2>
+<h3>@Goshuin.VisitDate.ToString("yyyy年MM月dd日")</h3>
+<br />
+
+<RadzenHtml>@((MarkupString)TravelogueText)</RadzenHtml>
+<br />
+<br />
+
+<RadzenButton Click="@(args => navigation.NavigateTo(Data.PathDefine.GoshuinEditUrl(Goshuin.ID)))">編集</RadzenButton>
+
