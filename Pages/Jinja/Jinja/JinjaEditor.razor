@@ -38,6 +38,11 @@
         IsAutoLocation = !IsAutoLocation;
         StateHasChanged();
     }
+
+    private void SetKami(Data.Kami kami)
+        {
+
+        }
 }
 
 <div class="col-xl-1 col-lg-2 col-3 text-left"><h2>名称</h2></div>
@@ -146,7 +151,7 @@
         <div class="row d-flex flex-row align-items-center">
             <div class="col-xl-1 col-lg-2 col-3 text-right"><h3>祭神@(i + 1)</h3></div>
             <div>
-                <RadzenDropDownDataGrid TValue="Data.Shinmei" Data=@shinmeiList TextProperty="Name"
+                <RadzenDropDownDataGrid TValue="Data.Shinmei" Data=@shinmeiList TextProperty="Name" Value="Jinja.SaijinList[i].Kami.ShinmeiList.First()"
                                         Change="@(s => Jinja.SaijinList[index].Kami = (s as Data.Shinmei).Kami)">
 
                 </RadzenDropDownDataGrid>

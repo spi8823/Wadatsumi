@@ -46,5 +46,7 @@
         jinjadb.Entry(Jinja).State = EntityState.Modified;
 
         jinjadb.SaveChanges();
+
+        navigation.NavigateTo(Data.PathDefine.JinjaListUrl);
     }
 }
