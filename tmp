@@ -1,0 +1,287 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class InputManager
+{
+    private static float sensitivity = 10f;
+    private static float gravity = 30f;
+
+    private static float preodicDownStartTime = 0.5f;
+    private static float preodicIntervalTime = 0.2f;
+
+    public KeyConfig keyConfig { get; private set; } = new KeyConfig();
+    private Dictionary<InputCode, InputButtonState> inputButtonStates { get; } = new Dictionary<InputCode, InputButtonState>();
+    private Dictionary<InputAxis, InputAxisState> inputAxisStates { get; } = new Dictionary<InputAxis, InputAxisState>();
+
+    public InputManager()
+    {
+        Init();
+    }
+
+    private void Init()
+    {
+        foreach (InputCode inputCode in Enum.GetValues(typeof(InputCode)))
+        {
+            inputButtonStates.Add(inputCode, new InputButtonState(inputCode));
+        }
+
+        inputAxisStates.Add(InputAxis.Vertical, new InputAxisState(InputAxis.Vertical, InputCode.Up, InputCode.Down));
+        inputAxisStates.Add(InputAxis.Horizontal, new InputAxisState(InputAxis.Horizontal, InputCode.Right, InputCode.Left));
+    }
+
+    public void Update()
+    {
+        foreach (var state in inputButtonStates.Values)
+        {
+            state.Update(keyConfig);
+        }
+        foreach (var state in inputAxisStates.Values)
+        {
+            state.Update(this);
+        }
+    }
+
+    public bool GetButton(InputCode inputCode)
+    {
+        if (inputButtonStates.ContainsKey(inputCode))
+        {
+            return inputButtonStates[inputCode].GetButton();
+        }
+        return false;
+    }
+
+    public bool GetButtonDown(InputCode inputCode)
+    {
+        if (inputButtonStates.ContainsKey(inputCode))
+        {
+            return inputButtonStates[inputCode].GetButtonDown();
+        }
+        return false;
+    }
+
+    public bool GetButtonUp(InputCode inputCode)
+    {
+        if (inputButtonStates.ContainsKey(inputCode))
+        {
+            return inputButtonStates[inputCode].GetButtonUp();
+        }
+        return false;
+    }
+
+    public bool GetButtonDownPeriodically(InputCode inputCode)
+    {
+        if (inputButtonStates.ContainsKey(inputCode))
+        {
+            return inputButtonStates[inputCode].GetButtonDownPeriodically();
+        }
+        return false;
+    }
+
+    public float GetAxis(InputAxis axis)
+    {
+        if (inputAxisStates.ContainsKey(axis))
+        {
+            return inputAxisStates[axis].GetValue();
+        }
+        return 0f;
+    }
+
+    public int GetAxisRaw(InputAxis axis)
+    {
+        if (inputAxisStates.ContainsKey(axis))
+        {
+            return inputAxisStates[axis].GetRawValue();
+        }
+        return 0;
+    }
+
+    public int GetAxisRawInstantly(InputAxis axis)
+    {
+        if (inputAxisStates.ContainsKey(axis))
+        {
+            return inputAxisStates[axis].GetRawValueInstantly(this);
+        }
+        return 0;
+    }
+
+    public int GetAxisRawPeriodically(InputAxis axis)
+    {
+        if (inputAxisStates.ContainsKey(axis))
+        {
+            return inputAxisStates[axis].GetRawValuePeriodically(this);
+        }
+        return 0;
+    }
+
+    public Vector2 GetVector2(InputAxis horizontalAxis = InputAxis.Horizontal, InputAxis verticalAxis = InputAxis.Vertical)
+    {
+        var horizontal = 0f;
+        if(inputAxisStates.ContainsKey(horizontalAxis))
+        {
+            horizontal = inputAxisStates[horizontalAxis].GetValue();
+        }
+        var vertical = 0f;
+        if(inputAxisStates.ContainsKey(verticalAxis))
+        {
+            vertical = inputAxisStates[verticalAxis].GetValue();
+        }
+
+        var vector = new Vector2(horizontal, vertical);
+        if(vector.magnitude > 1)
+        {
+            vector = vector.normalized;
+        }
+        return vector;
+    }
+
+    public class InputButtonState
+    {
+        public InputCode inputCode;
+        private bool isButtonPressedPreviously = false;
+        private bool isButtonPressed = false;
+        private float previousPressTime = 0;
+        private float pressTime = 0;
+
+        public InputButtonState(InputCode code)
+        {
+            inputCode = code;
+        }
+
+        public void Update(KeyConfig keyConfig)
+        {
+            isButtonPressedPreviously = isButtonPressed;
+            previousPressTime = pressTime;
+            isButtonPressed = false;
+
+            var keys = keyConfig.GetKeys(inputCode);
+            if (keys == null)
+            {
+                previousPressTime = 0;
+                pressTime = 0;
+                return;
+            }
+
+            foreach (var key in keys)
+            {
+                if (Input.GetKey(key))
+                {
+                    isButtonPressed = true;
+                    break;
+                }
+            }
+
+            if (isButtonPressed)
+            {
+                pressTime += Time.deltaTime;
+            }
+            else
+            {
+                pressTime = 0;
+            }
+        }
+
+        public bool GetButton()
+        {
+            return isButtonPressed;
+        }
+
+        public bool GetButtonDown()
+        {
+            return !isButtonPressedPreviously && isButtonPressed;
+        }
+
+        public bool GetButtonUp()
+        {
+            return isButtonPressedPreviously && !isButtonPressed;
+        }
+
+        public bool GetButtonDownPeriodically()
+        {
+            if (GetButtonDown())
+            {
+                return true;
+            }
+            if (previousPressTime < preodicDownStartTime && preodicDownStartTime <= pressTime)
+            {
+                return true;
+            }
+
+            if (pressTime < preodicDownStartTime)
+            {
+                return false;
+            }
+
+            return (int)((previousPressTime - preodicDownStartTime) / preodicIntervalTime) != (int)((pressTime - preodicDownStartTime) / preodicIntervalTime);
+        }
+    }
+
+    public class InputAxisState
+    {
+        public InputAxis inputAxis;
+        private InputCode positiveInputCode;
+        private InputCode negativeInputCode;
+
+        private float previousValue = 0;
+        private float value = 0;
+
+        public InputAxisState(InputAxis axis, InputCode positiveCode, InputCode negativeCode)
+        {
+            inputAxis = axis;
+            value = 0;
+            positiveInputCode = positiveCode;
+            negativeInputCode = negativeCode;
+        }
+
+        public void Update(InputManager inputManager)
+        {
+            var input = 0;
+            input += inputManager.GetButton(positiveInputCode) ? 1 : 0;
+            input -= inputManager.GetButton(negativeInputCode) ? 1 : 0;
+
+            previousValue = value;
+            if (input == 0)
+            {
+                if (value != 0)
+                {
+                    var currentValueSign = Mathf.Sign(value);
+                    value -= currentValueSign * gravity * Time.deltaTime;
+                    if (value * currentValueSign < 0)
+                    {
+                        value = 0;
+                    }
+                }
+            }
+            else
+            {
+                value += input * sensitivity * Time.deltaTime;
+                value = Mathf.Clamp(value, -1, 1);
+            }
+        }
+
+        public float GetValue()
+        {
+            return value;
+        }
+
+        public int GetRawValue()
+        {
+            return (int)Mathf.Sign(value);
+        }
+
+        public int GetRawValueInstantly(InputManager inputManager)
+        {
+            return (inputManager.GetButton(positiveInputCode) ? 1 : 0) + (inputManager.GetButton(negativeInputCode) ? -1 : 0);
+        }
+
+        public int GetRawValuePeriodically(InputManager inputManager)
+        {
+            if (GetRawValueInstantly(inputManager) == 0)
+            {
+                return 0;
+            }
+            return (inputManager.GetButtonDownPeriodically(positiveInputCode) ? 1 : 0) + (inputManager.GetButtonDownPeriodically(negativeInputCode) ? -1 : 0);
+        }
+    }
+}
