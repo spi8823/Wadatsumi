@@ -1,0 +1,99 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public enum InputCode
+{
+    Action1,
+    Action2,
+    Cancel,
+    Up,
+    Down,
+    Right,
+    Left,
+}
+
+public enum InputAxis
+{
+    Horizontal,
+    Vertical,
+}
+
+public class KeyConfig : ICloneable
+{
+    private Dictionary<InputCode, List<KeyCode>> keyMap { get; } = new Dictionary<InputCode, List<KeyCode>>();
+
+    public KeyConfig()
+    {
+        SetDefaultKeyMap();
+    }
+
+    object ICloneable.Clone()
+    {
+        var clone = new KeyConfig();
+        clone.keyMap.Clear();
+        foreach(var keyValue in keyMap)
+        {
+            var listClone = new List<KeyCode>(keyValue.Value);
+            clone.keyMap.Add(keyValue.Key, listClone);
+        }
+        return clone;
+    }
+
+    public void SetDefaultKeyMap()
+    {
+        keyMap.Clear();
+
+        SetKey(InputCode.Action1, KeyCode.Return);
+        SetKey(InputCode.Action1, KeyCode.F);
+        SetKey(InputCode.Action1, KeyCode.Space);
+
+        SetKey(InputCode.Action2, KeyCode.R);
+
+        SetKey(InputCode.Cancel, KeyCode.C);
+        SetKey(InputCode.Cancel, KeyCode.Escape);
+
+        SetKey(InputCode.Up, KeyCode.UpArrow);
+        SetKey(InputCode.Down, KeyCode.DownArrow);
+        SetKey(InputCode.Right, KeyCode.RightArrow);
+        SetKey(InputCode.Left, KeyCode.LeftArrow);
+        SetKey(InputCode.Up, KeyCode.W);
+        SetKey(InputCode.Down, KeyCode.S);
+        SetKey(InputCode.Right, KeyCode.D);
+        SetKey(InputCode.Left, KeyCode.A);
+    }
+
+    public List<KeyCode> GetKeys(InputCode inputCode)
+    {
+        if (!keyMap.ContainsKey(inputCode))
+        {
+            keyMap.Add(inputCode, new List<KeyCode>());
+        }
+        return keyMap[inputCode];
+    }
+
+    public void SetKey(InputCode inputCode, KeyCode key)
+    {
+        if(!keyMap.ContainsKey(inputCode))
+        {
+            keyMap.Add(inputCode, new List<KeyCode>());
+        }
+        if (keyMap[inputCode].Any(k => k == key))
+        {
+            return;
+        }
+
+        foreach(var code in keyMap.Keys)
+        {
+            if (keyMap[code].Contains(key))
+            {
+                keyMap[code].Remove(key);
+            }
+        }
+
+        keyMap[inputCode].Add(key);
+    }
+}
